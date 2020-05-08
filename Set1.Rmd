@@ -1,0 +1,306 @@
+---
+title: "MSBA Math Primer: Module 1"
+author: "Burcu Eke Rubini^[University of New Hampshire, Burcu.EkeRubini@unh.edu]"
+output: 
+  learnr::tutorial:
+    progressive: true
+    allow_skip: true
+runtime: shiny_prerendered
+description: >
+  Learn how to solve systems of linear equations in R.
+---
+
+```{r setup, include=FALSE}
+library(learnr)
+library(tidyverse)
+library(Lahman)
+library(datasets)
+library(fBasics)
+library(base)
+tutorial_options(exercise.timelimit = 60)
+knitr::opts_chunk$set(error = TRUE)
+```
+
+## Linear Algrebra
+
+This tutorial is designed to review basic operations on vectors and matrices. Throughout this tutorial lower case bold letters, such as **a** denotes vectors, upper case bold letters, such as **A** denotes matrices, and lower case letters, such as x denotes scalars.
+
+For example, a $3 \times 1$ vector **b** can be denoted as:
+
+$$b=\begin{pmatrix}
+b_1\\
+b_2\\
+b_3 \end{pmatrix}$$
+
+###
+
+Or, a $3 \times 2$ vector **A** can be denoted as:
+
+$$A=\begin{bmatrix}
+a_{11} & a_{12}\\
+a_{21} & a_{22}\\
+a_{31} & a_{32} \end{bmatrix}$$
+
+where $a_{ij}$ is the element on $i$-th row and $j$-th column
+
+## Basic Terminology
+
+### Basic Definitions
+
+- If a matrix has the same number of rows and number of columns, that matrix is classified as *square* matrix.
+- A *diagonal* matrix is a matrix where all off diagonal values are 0. (Diagonal refers to $a_{ii}$)
+- If a square diagonal matrix has 1's in its diagonals, it is called an *identity* matrix, and denoted as $I_n$, where $n$ is the number of columns (=number of rows)
+
+$$I_3=\begin{bmatrix}
+1&0&0\\
+0&1&0\\
+0&0&1\end{bmatrix}$$
+
+- Transpose of a matrix is a matrix when the rows and columns are switched.
+
+$$A=\begin{bmatrix}
+a_{11} & a_{12}\\
+a_{21} & a_{22}\\
+a_{31} & a_{32} \end{bmatrix} \text{ and } A^T=A'=\begin{bmatrix}
+a_{11} & a_{21} &a_{31}\\
+a_{12} & a_{22} & a_{32} \end{bmatrix}$$
+
+## Addition
+
+### Adding two or more matrices
+
+As long as they are of the same dimension, we can do element-by-element addition using matrices and vectors. For example:
+
+$$A+B=\begin{bmatrix}
+1 & -1\\
+2 & 2\\
+3 & -3 \end{bmatrix} + \begin{bmatrix}
+1 &1\\
+1 &1\\
+1 &1 \end{bmatrix} = \begin{bmatrix}
+2 & 0\\
+3 & 3\\
+4 & -2 \end{bmatrix} $$
+
+
+### Example
+
+
+The R code required to add the two matrices seen above (A and B are predefined):
+
+```{r echo=FALSE}
+A=matrix(c(1:3, -1,2,-3), nrow=3, ncol = 2)
+B=matrix(rep(1, 6), 3, 2)
+C=matrix(c(rep(1, 4), -1,-2), 2, 3)
+D=matrix(c(1:3, -1,2,-3, 1, 1, 1), nrow=3, ncol = 3)
+I=diag(3)
+E=matrix(1:4, nrow=2, ncol=2)
+F=matrix(2:5, nrow=2, ncol=2)
+```
+
+```{r A-plus-B, exercise=TRUE}
+A+B
+```
+
+
+### Exercise 2
+
+Now calculate B+A. Do you get the same results as in the example?
+
+```{r set1ex2, exercise=TRUE, exercise.lines = 5}
+
+```
+
+```{r set1ex2-solution}
+A+B
+```
+
+### Exercise 3
+
+Now write a code that adds the matrices A and C. Can you do it? If not, what is the problem? Try printing A and C.
+
+```{r set1ex3, exercise=TRUE, exercise.lines = 5}
+
+```
+
+```{r set1ex3-solution}
+A+C
+```
+
+```{r set1ex3-check}
+"We cannot add matrices of different dimensions"
+```
+
+### Exercise 4
+
+How about $$A^T+C$$? Can we add those two?
+
+```{r set1ex4, exercise=TRUE, exercise.lines = 5}
+
+```
+
+<div id="set1ex4-hint">
+**Hint:** You can take transpose of matrix B by `t(B)`.
+</div>
+
+```{r set1ex4-solution}
+t(A)+C
+```
+
+```{r set1ex4-check}
+"Yes! Now they both have the same number of rows and columns"
+```
+
+
+### Properties of Addition
+
+Assuming **A**, **B** and **C** are matrices with the same dimensions:
+
+- $(A+B) +C=A+ (B+C)$
+- $A+B=B+A$
+- $A+O=O+A=A$
+- $A+ (-A) = (-A) +A=O$
+
+## Multiplication
+
+### Multiplying two matrices
+
+Two  matrices **A** and **B** can  be  multiplied  together  if  the  number  of  rows  in **B** equals  the  number  of columns in **A**: $A_{m \times n}B_{n \times u} = C_{m \times u}$. An element $c_{ik}$ is calculated as  $c_{ik}=\sum_{i=1}^n a_{ij}b_{jk}$
+
+
+### Multiplication Example 
+To illustrate:
+
+$$\begin{eqnarray}
+AC &=&\begin{bmatrix}
+1 & -1\\
+2 & 2\\
+3 & -3 \end{bmatrix}  \begin{bmatrix}
+1 &1&-1\\
+1 &1&-2\\ \end{bmatrix} \\
+&=& \begin{bmatrix}
+(1)(1)+(-1)(1) & (1)(1)+(1)(-1) & (1)(-1) +(-1)(-2) \\
+(2)(1) +(2)(1) & (2)(1) +(2)(1) & (2)(-1) +(2)(-2)\\
+(3)(1) + (-3)(1) & (3)(1) + (-3)(1) & (3)(-1) + (-3)(-2) \end{bmatrix} \\
+&=&  \begin{bmatrix}
+0 & 0 & 1\\
+4 & 4 & -6 \\
+0 & 0 & 3
+\end{bmatrix}
+\end{eqnarray}$$
+
+Let's check our results in R. `*` is reserved for scalar multiplication. For Matrix multiplication, we can use `%*%`:
+
+```{r A-times-C, exercise=TRUE}
+A %*% C
+```
+
+
+### Exercise 5
+
+Multiply the matrix **D** by matrix **A**, $DA$ where $$D=\begin{bmatrix}
+1 & -1 & 1\\
+2 & 2 & 1\\
+3 & -3 & 1 \end{bmatrix}$$
+
+Now, check your work in R. Can you get the same results for $AD$ and $DA$?
+
+```{r set1ex5, exercise=TRUE}
+
+```
+
+```{r set1ex5-solution}
+D%*%A
+```
+
+### Exercise 6
+
+Multiply the matrix **D** by matrix **I**, $DI$ where $I=I_3$. Do you get the same results for $ID$ and $DI$?
+
+```{r set1ex6, exercise=TRUE}
+
+```
+
+```{r set1ex6-solution}
+D %*% I
+```
+    
+### Exercise 7
+
+Now, multiply the matrix **I** by matrix **D**, $ID$ where $I=I_3$. Do you get the same results for $ID$ and $DI$?
+
+```{r set1ex7, exercise=TRUE}
+
+```
+
+```{r set1ex7-solution}
+I %*% D
+```
+
+
+```{r set1ex7-check}
+"Good Job! ID=DI!"
+```
+
+###
+
+For any $n \times m$ matrix **A** multiplied by the identity matrix is equal to the matrix itself.
+
+- $AI_m=A$
+- $I_nA=A$
+- When $m=n$, $AI_n=I_nA=A$
+
+### Exercise 8
+
+Consider the two matrices E and F (matrices already in R). Calculate $(EF)^T$.
+
+
+```{r set1ex8, exercise=TRUE, exercise.lines = 5}
+print(E)
+print(F)
+
+```
+
+```{r set1ex8-solution}
+print(E)
+print(F)
+t(E%*%F)
+```
+
+### Exercise 9
+
+Consider the two matrices E and F. Calculate $F^TE^T$.
+
+
+```{r set1ex9, exercise=TRUE, exercise.lines = 5}
+
+```
+
+```{r set1ex9-solution}
+t(F)%*%t(E)
+```
+
+```{r set1ex9-check}
+"Notice that exerices 8 and 9 yield the same output!"
+```
+
+###
+
+Identity: $$ (AB)^T = B^T A^T$$
+
+
+## Quiz 1
+
+### Quiz 1 Questions
+
+```{r quiz 1}
+quiz(
+  question("Which one of the following identities / operations require the matrices to be of the same dimension $(n \times m$)?",
+    answer("(AB)^T = B^T A^T"),
+    answer("(AB)^T = AB"),
+    answer("A+B", correct = TRUE),
+    answer("AB")
+  )
+)
+```
+
